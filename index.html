@@ -868,10 +868,21 @@
             align-items: center;
             gap: 10px;
             z-index: 999;
-            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
         }
 
-        .float-wa:hover {
+        .float-wa.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .float-wa.active:hover {
             transform: scale(1.05);
             background-color: #20BA5A;
         }
@@ -1488,6 +1499,14 @@
         document.addEventListener('dragstart', function(e) {
             e.preventDefault();
         });
+
+        // 4. MOSTRAR BOTÓN DE WHATSAPP ÚNICAMENTE DESPUÉS DE 5 MINUTOS (300.000 MS)
+        setTimeout(function() {
+            const waBtn = document.querySelector('.float-wa');
+            if (waBtn) {
+                waBtn.classList.add('active');
+            }
+        }, 5 * 60 * 1000);
     </script>
 </body>
 </html>
