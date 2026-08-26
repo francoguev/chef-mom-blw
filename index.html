@@ -976,6 +976,89 @@
             margin-bottom: 2px;
         }
 
+    
+        /* POPUP DE NOTIFICACIÓN DE VENTAS EN VIVO (SOLO DESKTOP / WEB) */
+        .sales-toast {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            background: #FFFFFF;
+            border: 1px solid rgba(232, 74, 95, 0.18);
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            border-radius: 14px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(25px);
+            transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+            max-width: 330px;
+        }
+
+        .sales-toast.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .sales-toast-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--bg-light-pink);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(232, 74, 95, 0.15);
+        }
+
+        .sales-toast-content {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.35;
+        }
+
+        .sales-toast-name {
+            font-size: 0.93rem;
+            font-weight: 700;
+            color: #1A202C;
+        }
+
+        .sales-toast-location {
+            font-size: 0.78rem;
+            color: #4A5568;
+            font-weight: 500;
+        }
+
+        .sales-toast-action {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .sales-toast-time {
+            font-size: 0.7rem;
+            color: #A0AEC0;
+            margin-top: 1px;
+        }
+
+        /* OCULTAR EN DISPOSITIVOS MÓVILES (SOLO VERSIÓN WEB / DESKTOP) */
+        @media (max-width: 768px) {
+            .sales-toast {
+                display: none !important;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -1385,6 +1468,19 @@
     </a>
 
     <!-- MODAL POPUP ALERTA CONTENIDO PROTEGIDO -->
+        <!-- POPUP DE NOTIFICACIÓN DE VENTAS EN VIVO (SOLO DESKTOP / WEB) -->
+    <div id="sales-toast" class="sales-toast">
+        <div class="sales-toast-icon">
+            <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <div class="sales-toast-content">
+            <span class="sales-toast-name" id="toast-name">María González</span>
+            <span class="sales-toast-location" id="toast-location">Bogotá, Colombia 🇨🇴</span>
+            <span class="sales-toast-action">Acaba de adquirir su Megapack</span>
+            <span class="sales-toast-time" id="toast-time">hace 2 min</span>
+        </div>
+    </div>
+
     <div id="protection-modal" class="protection-modal">
         <div class="protection-modal-card">
             <div class="alert-icon">⚠️</div>
@@ -1489,6 +1585,74 @@
                 waBtn.classList.add('active');
             }
         }, 5 * 60 * 1000);
+    
+        // 5. POPUP SIMULADOR DE VENTAS EN VIVO (SOLO DESKTOP / WEB)
+        const salesData = [
+            { name: "María González", location: "Bogotá, Colombia 🇨🇴" },
+            { name: "Lucía Fernández", location: "Ciudad de México, México 🇲🇽" },
+            { name: "Camila Rodríguez", location: "Lima, Perú 🇵🇪" },
+            { name: "Ana Silva", location: "Santiago, Chile 🇨🇱" },
+            { name: "Sofía Morales", location: "Buenos Aires, Argentina 🇦🇷" },
+            { name: "Mariana Torres", location: "Quito, Ecuador 🇪🇨" },
+            { name: "Daniela Benítez", location: "San José, Costa Rica 🇨🇷" },
+            { name: "Valentina Gómez", location: "Medellín, Colombia 🇨🇴" },
+            { name: "Carolina Martínez", location: "Guadalajara, México 🇲🇽" },
+            { name: "Gabriela Vargas", location: "Montevideo, Uruguay 🇺🇾" },
+            { name: "Paula Mendoza", location: "Arequipa, Perú 🇵🇪" },
+            { name: "Laura Ríos", location: "Ciudad de Guatemala, Guatemala 🇬🇹" },
+            { name: "Isabella Castro", location: "Cali, Colombia 🇨🇴" },
+            { name: "Fernanda López", location: "Monterrey, México 🇲🇽" }
+        ];
+
+        const timesList = ["hace un momento", "hace 1 min", "hace 2 min", "hace 3 min", "hace 4 min"];
+
+        function triggerSalesToast() {
+            // Solo ejecutar en pantallas de escritorio (> 768px)
+            if (window.innerWidth <= 768) return;
+
+            const toast = document.getElementById('sales-toast');
+            const nameEl = document.getElementById('toast-name');
+            const locationEl = document.getElementById('toast-location');
+            const timeEl = document.getElementById('toast-time');
+
+            if (!toast || !nameEl || !locationEl) return;
+
+            const randomBuyer = salesData[Math.floor(Math.random() * salesData.length)];
+            const randomTime = timesList[Math.floor(Math.random() * timesList.length)];
+
+            nameEl.textContent = randomBuyer.name;
+            locationEl.textContent = randomBuyer.location;
+            if (timeEl) timeEl.textContent = randomTime;
+
+            toast.classList.add('active');
+
+            // Mostrar exactamente durante 3 segundos (3000 ms)
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // Programador aleatorio durante 10 minutos (1 a 2 veces por minuto o minutos libres)
+        let totalElapsed = 0;
+        function scheduleNextToast() {
+            if (totalElapsed >= 10 * 60 * 1000) return; // Detener después de 10 minutos
+
+            // Intervalo aleatorio entre 25s (25000ms) y 50s (50000ms)
+            const randomDelay = Math.floor(Math.random() * (50000 - 25000 + 1)) + 25000;
+
+            setTimeout(() => {
+                totalElapsed += randomDelay;
+                triggerSalesToast();
+                scheduleNextToast();
+            }, randomDelay);
+        }
+
+        // Primera aparición a los 10 segundos de cargar la web
+        setTimeout(() => {
+            triggerSalesToast();
+            scheduleNextToast();
+        }, 10000);
+
     </script>
 </body>
 </html>
