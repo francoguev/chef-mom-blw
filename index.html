@@ -186,6 +186,46 @@
             width: 100%;
         }
 
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            border-radius: var(--radius-md);
+            display: block;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .video-audio-btn {
+            position: absolute;
+            bottom: 18px;
+            right: 18px;
+            background: rgba(26, 32, 44, 0.85);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(6px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .video-audio-btn:hover {
+            background: var(--primary);
+            color: #ffffff;
+            transform: scale(1.04);
+        }
+
         .badge-offer-hero {
             position: absolute;
             top: -15px;
@@ -1084,10 +1124,18 @@
                 Descubre la Guía Completa <strong>Chef Mom</strong> con más de 250 recetas sencillas, menús semanales organizados en tu celular y referencias visuales de cortes seguras que eliminan el miedo al atragantamiento desde el primer plato.
             </p>
 
-            <!-- SECCION B: IMAGEN HERO / PROMESA -->
+            <!-- SECCION B: VIDEO HERO / PROMESA -->
             <div class="hero-media-card">
                 <div class="badge-offer-hero">¡HOY SOLO $14.99 USD!</div>
-                <img src="assets/media_1787604967859.png" alt="Megapack Chef Mom +250 Recetas BLW">
+                <div class="video-wrapper">
+                    <video id="heroVideo" muted playsinline loop controls preload="metadata">
+                        <source src="assets/web_chefmom.mp4" type="video/mp4">
+                        Tu navegador no soporta reproducción de video.
+                    </video>
+                    <button id="toggleAudioBtn" class="video-audio-btn" type="button" onclick="toggleHeroVideoAudio()">
+                        <i class="fa-solid fa-volume-xmark" id="audioIcon"></i> <span id="audioText">Activar Audio</span>
+                    </button>
+                </div>
             </div>
 
             <!-- BOTÓN CTA PRINCIPAL -->
@@ -1652,6 +1700,34 @@
             triggerSalesToast();
             scheduleNextToast();
         }, 10000);
+
+        // Video Hero: Autoplay diferido 2 segundos & Toggle Audio
+        function toggleHeroVideoAudio() {
+            const video = document.getElementById('heroVideo');
+            const icon = document.getElementById('audioIcon');
+            const text = document.getElementById('audioText');
+            if (video) {
+                video.muted = !video.muted;
+                if (video.muted) {
+                    icon.className = 'fa-solid fa-volume-xmark';
+                    text.textContent = 'Activar Audio';
+                } else {
+                    icon.className = 'fa-solid fa-volume-high';
+                    text.textContent = 'Silenciar Audio';
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const video = document.getElementById('heroVideo');
+                if (video) {
+                    video.play().catch(err => {
+                        console.log("Autoplay diferido:", err);
+                    });
+                }
+            }, 2000); // 2 segundos exactos
+        });
 
     </script>
 </body>
